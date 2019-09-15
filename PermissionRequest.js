@@ -4,8 +4,8 @@
  * @module modules/PermissionRequest
  */
 
-import * as CommonMessages from "/common/modules/MessageHandler/CommonMessages.js";
-import * as CustomMessages from "/common/modules/MessageHandler/CustomMessages.js";
+import * as CommonMessages from "../MessageHandler/CommonMessages.js";
+import * as CustomMessages from "../MessageHandler/CustomMessages.js";
 
 const optionalPermissions = {};
 
