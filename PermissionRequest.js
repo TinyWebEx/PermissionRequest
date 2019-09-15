@@ -410,27 +410,6 @@ export function isPermissionGranted(permissions) {
 }
 
 /**
- * **Syncronously** checks whether the permission has is granted.
- *
- * This also *only* works for permissions registered before via registerPermissionMessageBox!
- * It also only returns cached values, mostly the last one set when you've registered the
- * permission.
- *
- * @public
- * @param {browser.permissions.Permissions} permissions the permission to test,
- * see https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/permissions/Permissions
- * @param {function} callback
- * @returns {boolean}
-*/
-export function addTriggerOnPermissionGranted(permissions, callback) {
-    const thisPermission = getInternalPermissionData(permissions);
-
-    thisPermission.trigger = thisPermission.trigger || {};
-    thisPermission.trigger.onGranted = thisPermission.trigger.onGranted || [];
-    thisPermission.trigger.onGranted.push(callback);
-}
-
-/**
  * Inits the module.
  *
  * @private
