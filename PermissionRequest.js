@@ -324,7 +324,7 @@ export function requestPermission(permissions, messageId, event, options = {}) {
             await updatePermissionStatus(permissions); // should change the setting cache to be "true"
             return Promise.resolve();
         case null:
-            CommonMessages.showError("Requesting permission failed.", true); // TODO: localize
+            CommonMessages.showError("couldNotRequestPermission", true);
             break;
         case false:
 
