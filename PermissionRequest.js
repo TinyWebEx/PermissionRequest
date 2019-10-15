@@ -77,7 +77,7 @@ async function updatePermissionStatus(permissions) {
  * Return the previously registered data for a permission.
  *
  * @private
- * @param {browser.permissions.Permissions} [permissions] the permission you got as input
+ * @param {browser.permissions.Permissions} permissions the permission you got as input
  * see https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/permissions/Permissions
  * @returns {Object} "thisPermission"
  * @throws {TypeError} if not registered
@@ -89,6 +89,26 @@ function getInternalPermissionData(permissions) {
     }
 
     return thisPermission;
+}
+
+/**
+ * Return the previously registered data for a permission.
+ *
+ * @private
+ * @param {Object} thisPermission the internal permission data as returned by
+ * {@link getInternalPermissionData()}.
+ * @param  {string} messageId the message that should be shown as a fallback if
+ *                              requesting the permission is not possible
+ * @returns {Object} "messageBox"
+ * @throws {TypeError} if not registered
+ */
+function getInternalMessageBox(thisPermission, messageId) {
+    const messageBox = thisPermission.messageBoxes.find((messageBox) => messageBox.messageId === messageId);
+    if (!messageBox) {
+        throw new TypeError("messageId has not been registered before. Please call registerPermissionMessageBox to register the message box.");
+    }
+
+    return messageBox;
 }
 
 /**
@@ -294,10 +314,7 @@ export function requestPermission(permissions, messageId, event, options = {}) {
 
     const thisPermission = getInternalPermissionData(permissions);
 
-    const messageBox = thisPermission.messageBoxes.find((messageBox) => messageBox.messageId === messageId);
-    if (!messageBox) {
-        throw new TypeError("messageId has not been registered before. Please call registerPermissionMessageBox to register the message box.");
-    }
+    const messageBox = getInternalMessageBox(thisPermission, messageId);
 
     // if we cannot actually request the permission, let's show a useful
     // message, at least
@@ -372,7 +389,43 @@ export function requestPermission(permissions, messageId, event, options = {}) {
 }
 
 /**
- * Cancels the permission prompt.
+ * Cancels one and only one permission prompt.
+ *
+ * If the permission is granted, this automatically hides *all* permission
+ * prompts for this oen permission.
+ *
+ * Due to technical limitations, it cannot actually close the permission prompt. It can just hide the own
+ * Thus, if a permission is currently being requested, this may lead to strange side-effects if the permission
+ * is granted anyway, because the old Promise will still be fullfilled then.
+ *
+ * @public
+ * @param {browser.permissions.Permissions} permissions the permission request to close,
+ * see https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/permissions/Permissions
+ * @param  {string} messageId the message that should be shown as a fallback if
+ *                              requesting the permission is not possible
+ * @returns {void}
+ * @throws {TypeError}
+ */
+export function cancelPermissionPrompt(permissions, messageId) {
+    // we cannot actually really close the permission prompt, see:
+    // https://discourse.mozilla.org/t/can-browser-extension-permission-requests-be-cancelled/44734?u=rugkx
+
+    // automatically convert into hiding all message boxes, if the permission
+    // has been globally granted
+    if (isPermissionGranted(permissions)) {
+        cancelAllPermissionPrompts(permissions);
+        return;
+    }
+
+    const thisPermission = getInternalPermissionData(permissions);
+
+    const messageBox = getInternalMessageBox(thisPermission, messageId);
+
+    hideMessageBox(messageBox);
+}
+
+/**
+ * Cancels the permission prompts for that one permission.
  *
  * Due to technical limitations, it cannot actually close the permission prompt. It can just hide the own
  * Thus, if a permission is currently being requested, this may lead to strange side-effects if the permission
@@ -382,8 +435,11 @@ export function requestPermission(permissions, messageId, event, options = {}) {
  * @param {browser.permissions.Permissions} permissions the permission request to close,
  * see https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/permissions/Permissions
  * @returns {void}
+ * @throws {TypeError}
+ * @deprecated Use {@link cancelPermissionPrompt()} instead to avoid side-effects with multiple
+ * permission prompt. It will automatically also hide all message boxes, if appropiate.
  */
-export function cancelPermissionPrompt(permissions) {
+export function cancelAllPermissionPrompts(permissions) {
     // we cannot actually really close the permission prompt, see:
     // https://discourse.mozilla.org/t/can-browser-extension-permission-requests-be-cancelled/44734?u=rugkx
 
