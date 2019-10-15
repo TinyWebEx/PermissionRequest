@@ -83,6 +83,11 @@ async function updatePermissionStatus(permissions) {
  * @throws {TypeError} if not registered
  */
 function getInternalPermissionData(permissions) {
+    // simple truthy check
+    if (!permissions) {
+        throw new TypeError(`Permission object expected, but got "${permissions}".`);
+    }
+    
     const thisPermission = optionalPermissions[permissionToString(permissions)];
     if (!thisPermission) {
         throw new TypeError("Permission has not been registered before. Please call registerPermissionMessageBox to register the permission.");
@@ -103,6 +108,11 @@ function getInternalPermissionData(permissions) {
  * @throws {TypeError} if not registered
  */
 function getInternalMessageBox(thisPermission, messageId) {
+    // simple truthy check
+    if (!messageId) {
+        throw new TypeError(`Message ID string expected, but got "${messageId}".`);
+    }
+    
     const messageBox = thisPermission.messageBoxes.find((messageBox) => messageBox.messageId === messageId);
     if (!messageBox) {
         throw new TypeError("messageId has not been registered before. Please call registerPermissionMessageBox to register the message box.");
