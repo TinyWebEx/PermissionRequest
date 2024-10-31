@@ -17,3 +17,18 @@ However, you can still cancel it (with some caveats with `cancelPermissionPrompt
 `requestPermission` returns a promise.
 In contrast to the original [`browser.permissions.request`](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/permissions/request) API, the promise only resolves _if_ the user accepted the permission request. Otherwise it just rejects with an `PermissionError`.
 
+### Required translation
+
+You need to add these resources to your translation `message.json` in order to have all translations for this library:
+```json
+  "buttonRequestPermission": {
+    "message": "Berechtigung erteilen",
+    "description": "The button label, used for requesting a permission that is missing."
+  },
+  "couldNotRequestPermission": {
+    "message": "Konnte Berechtigung nicht erfragen.",
+    "description": "When the permission request fails."
+  },
+```
+
+In addition, you obviously need to have the translation for the `messageText` you register when calling `registerPermissionMessageBox` added, too.
