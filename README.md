@@ -22,11 +22,11 @@ In contrast to the original [`browser.permissions.request`](https://developer.mo
 You need to add these resources to your translation `message.json` in order to have all translations for this library:
 ```json
   "buttonRequestPermission": {
-    "message": "Berechtigung erteilen",
+    "message": "Grant permission",
     "description": "The button label, used for requesting a permission that is missing."
   },
   "couldNotRequestPermission": {
-    "message": "Konnte Berechtigung nicht erfragen.",
+    "message": "Requesting permission failed.",
     "description": "When the permission request fails."
   },
 ```
